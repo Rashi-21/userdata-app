@@ -1,0 +1,12 @@
+.nav-link {
+    font-size: 1.5rem;
+    color: #06347a;
+}
+
+.navbar {
+    justify-content: space-between;
+}
+
+.navbar-nav {
+    float: right;
+}
