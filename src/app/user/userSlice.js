@@ -2,12 +2,12 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 
 export const fetchUsers = createAsyncThunk("user/fetchUsers", async() => {
-    return axios.get('https://649b1169bf7c145d0239f5b2.mockapi.io/api/r1/userlist')
+    return axios.get('http://localhost:5000/api/list')
         .then(res => res.data)
 })
 
 export const addUser = createAsyncThunk("user/addUser", async(values) => {
-    return fetch("https://649b1169bf7c145d0239f5b2.mockapi.io/api/r1/userlist", {
+    return fetch("http://localhost:5000/api/list", {
         method: "POST",
         headers: { Accept: "application/json", "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -23,11 +23,10 @@ export const addUser = createAsyncThunk("user/addUser", async(values) => {
 })
 
 export const loginUser = createAsyncThunk("user/loginUser", async(userCredential) => {
-    return fetch("https://649b1169bf7c145d0239f5b2.mockapi.io/api/r1/userlist", {
-        method: "POST",
-        headers: { Accept: "application/json", ContentType: "application/json" },
-        body: JSON.stringify(userCredential)
-    }).then((res) => res.json())
+    const request = await axios.post("http://localhost:5000/api/login", userCredential)
+    const response = await request.data.data
+    localStorage.setItem('user', JSON.stringify(response))
+    return response
 
 })
 

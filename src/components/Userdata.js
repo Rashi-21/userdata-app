@@ -42,7 +42,7 @@ function Userlist(){
                     </thead>
                     <tbody>
                     {
-                            users.user.map( (getUser, index)=>(
+                            users.user.map((getUser, index)=>(
                                 <tr key={index}>
                                 <td>{ index+1} </td>
                                 <td>{getUser.username}</td>
