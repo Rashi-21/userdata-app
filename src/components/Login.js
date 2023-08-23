@@ -1,33 +1,43 @@
 import React, { useState} from 'react'
-import { useDispatch, useSelector } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom'
-import { loginUser } from '../app/user/userSlice';
+import { Link,  } from 'react-router-dom'
+import swal from 'sweetalert'
 
-function Login() {
+async function loginUser(credentials) {
+    return fetch('http://localhost:5000/api/login', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(credentials)
+    })
+    .then(data => data.json())
+}
+
+
+const Login = () => {
 
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('')
 
-    const {loading, error} = useSelector((state) => {return state.user})
-    const dispatch = useDispatch()
-    const navigate = useNavigate()
 
-    const handleLoginEvent = (e) => {
-        e.preventDefault();
-        let userCredential = {
+    const handleLoginEvent = async e => {
+        e.preventDefault()
+        const response = await loginUser({
             username, email, password
-        }
-        dispatch(loginUser(userCredential))
-        .then((result) => {
-            if(result.payload) {
-                setUsername('')
-                setEmail('')
-                setPassword('')
-                navigate('/')
-            }
         })
-        console.log(userCredential)
+        if ('accessToken' in response) {
+            swal("Success", response.message, "success", {
+                buttons: false,
+                timer: 2000
+            })
+            .then(()=> {
+                localStorage.setItem('accessToken', response['accessToken'])
+                localStorage.setItem('user', JSON.stringify(response['user']));
+                window.location.href = '/profile'
+            })
+        }else {
+            swal ("Failed", response.message, "error")
+        }
+
     }
 
   return (
@@ -45,17 +55,14 @@ function Login() {
                     <label>Password</label>
                     <input type='password' required className='form-control' value={password} onChange={(e)=>setPassword(e.target.value)}/>
                     
-                    <button type='submit' className='btn btn-success btn-md'>{loading?'Loading...':'Sign-in'}</button>
-                    {error&&(
-                        <div className='alert alert-danger' role='alert'>{error}</div>
-                    )}
+                    <button type='submit' className='btn btn-success btn-md'>Sign In</button>
                     <Link to='/' className='btn btn-primary'>Back</Link>
                 </form>
             </div>
-        </div>
-      
+        </div>    
     </div>
   )
 }
+
 
 export default Login
